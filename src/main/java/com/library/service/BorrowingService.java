@@ -1,5 +1,6 @@
 package com.library.service;
 
+import com.library.exception.MessageException;
 import com.library.model.Book;
 import com.library.model.BorrowingRecord;
 import com.library.model.Patron;
@@ -27,12 +28,12 @@ public class BorrowingService {
     @Transactional
     public BorrowingRecord borrowBook(Long bookId, Long patronId) {
         Book book = bookRepository.findById(bookId)
-            .orElseThrow(() -> new RuntimeException("Book not found"));
+            .orElseThrow(() -> new MessageException("Book not found"));
         Patron patron = patronRepository.findById(patronId)
-            .orElseThrow(() -> new RuntimeException("Patron not found"));
+            .orElseThrow(() -> new MessageException("Patron not found"));
 
         if (borrowingRecordRepository.existsByBookAndReturnDateIsNull(book)) {
-            throw new RuntimeException("Book is already borrowed");
+            throw new MessageException("Book is already borrowed");
         }
 
         book.setAvailable(false);
@@ -49,13 +50,13 @@ public class BorrowingService {
     @Transactional
     public BorrowingRecord returnBook(Long bookId, Long patronId) {
         Book book = bookRepository.findById(bookId)
-            .orElseThrow(() -> new RuntimeException("Book not found"));
+            .orElseThrow(() -> new MessageException("Book not found"));
         Patron patron = patronRepository.findById(patronId)
-            .orElseThrow(() -> new RuntimeException("Patron not found"));
+            .orElseThrow(() -> new MessageException("Patron not found"));
 
         BorrowingRecord record = borrowingRecordRepository
             .findByBookAndPatronAndReturnDateIsNull(book, patron)
-            .orElseThrow(() -> new RuntimeException("No active borrowing record found"));
+            .orElseThrow(() -> new MessageException("No active borrowing record found"));
 
         book.setAvailable(true);
         bookRepository.save(book);

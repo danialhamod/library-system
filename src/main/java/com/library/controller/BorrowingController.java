@@ -18,21 +18,13 @@ public class BorrowingController {
     public ResponseEntity<BorrowingRecord> borrowBook(
             @PathVariable Long bookId,
             @PathVariable Long patronId) {
-        try {
-            return ResponseEntity.ok(borrowingService.borrowBook(bookId, patronId));
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().build();
-        }
+        return ResponseEntity.ok(borrowingService.borrowBook(bookId, patronId));
     }
 
     @PutMapping("/return/{bookId}/patron/{patronId}")
     public ResponseEntity<BorrowingRecord> returnBook(
             @PathVariable Long bookId,
             @PathVariable Long patronId) {
-        try {
-            return ResponseEntity.ok(borrowingService.returnBook(bookId, patronId));
-        } catch (RuntimeException e) {
-            return ResponseEntity.ok(null);
-        }
+        return ResponseEntity.ok(borrowingService.returnBook(bookId, patronId));
     }
 }

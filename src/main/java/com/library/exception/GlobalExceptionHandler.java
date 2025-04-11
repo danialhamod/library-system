@@ -3,6 +3,7 @@ package com.library.exception;
 import com.library.constants.ErrorCodes;
 import com.library.dto.ApiResponse;
 import jakarta.validation.ConstraintViolationException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -16,6 +17,9 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    @Value("${app.debug:false}") // default is false if not set
+    private boolean debugMode;
+    
     // Handle @Valid annotation errors (request body validation)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiResponse<Map<String, String>>> handleMethodArgumentNotValid(
@@ -58,10 +62,18 @@ public class GlobalExceptionHandler {
 
     // EntityAlreadyExistsException handler
     @ExceptionHandler(EntityAlreadyExistsException.class)
-    public ResponseEntity<ApiResponse<Void>> handleISBNExists(EntityAlreadyExistsException ex) {
+    public ResponseEntity<ApiResponse<Void>> handleAlreadyExists(EntityAlreadyExistsException ex) {
         return ResponseEntity
             .status(HttpStatus.CONFLICT)
             .body(ApiResponse.error(ex.getMessage(), ErrorCodes.CONFLICT_ERROR));
+    }
+
+    // MessageException handler
+    @ExceptionHandler(MessageException.class)
+    public ResponseEntity<ApiResponse<Void>> handleCustomError(MessageException ex) {
+        return ResponseEntity
+            .status(HttpStatus.BAD_REQUEST)
+            .body(ApiResponse.error(ex.getMessage(), ErrorCodes.PROCCESSING_ERROR));
     }
 
     // Generic exception handler
@@ -70,8 +82,8 @@ public class GlobalExceptionHandler {
         return ResponseEntity
             .status(HttpStatus.INTERNAL_SERVER_ERROR)
             .body(ApiResponse.error(
-                "An unexpected error occurred: " + ex.getMessage(),
-                HttpStatus.INTERNAL_SERVER_ERROR.value()
+                debugMode ? ex.getMessage() : "An unexpected error ocurred",
+                ErrorCodes.GENERAL_ERROR
             ));
     }
 }
