@@ -2,11 +2,13 @@ package com.library.controller;
 
 import com.library.model.Book;
 import com.library.service.BookService;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/books")
@@ -18,8 +20,8 @@ public class BookController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Book>> getAllBooks() {
-        return ResponseEntity.ok(bookService.getAllBooks());
+    public Page<Book> getBooks(@PageableDefault(size = 10, sort = "id") Pageable pageable) {
+        return bookService.getAllBooks(pageable);
     }
 
     @GetMapping("/{id}")

@@ -2,11 +2,12 @@ package com.library.controller;
 
 import com.library.model.Patron;
 import com.library.service.PatronService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/patrons")
@@ -18,8 +19,8 @@ public class PatronController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Patron>> getAllPatrons() {
-        return ResponseEntity.ok(patronService.getAllPatrons());
+    public Page<Patron> getBooks(@PageableDefault(size = 10, sort = "id") Pageable pageable) {
+        return patronService.getAllPatrons(pageable);
     }
 
     @GetMapping("/{id}")

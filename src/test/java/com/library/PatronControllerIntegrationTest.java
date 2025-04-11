@@ -44,9 +44,9 @@ public class PatronControllerIntegrationTest extends BaseTest {
         mockMvc.perform(get("/api/patrons").with(auth))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.data", hasSize(2)))
-                .andExpect(jsonPath("$.data[0].name").value("Patron 1"))
-                .andExpect(jsonPath("$.data[1].name").value("Patron 2"));
+                .andExpect(jsonPath("$.data.content", hasSize(2)))
+                .andExpect(jsonPath("$.data.content[0].name").value("Patron 1"))
+                .andExpect(jsonPath("$.data.content[1].name").value("Patron 2"));
     }
 
     @Test
