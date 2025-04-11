@@ -1,5 +1,6 @@
 package com.library.service;
 
+import com.library.dto.PaginatedResponse;
 import com.library.exception.EntityAlreadyExistsException;
 import com.library.model.Book;
 import com.library.repository.BookRepository;
@@ -7,7 +8,6 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 @Service
@@ -18,8 +18,8 @@ public class BookService {
         this.bookRepository = bookRepository;
     }
 
-    public Page<Book> getAllBooks(Pageable pageable) {
-        return bookRepository.findAll(pageable);
+    public PaginatedResponse<Book> getAllBooks(Pageable pageable) {
+        return new PaginatedResponse<Book>(bookRepository.findAll(pageable));
     }
 
     @Cacheable(value = "books", key = "#id")

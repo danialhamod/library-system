@@ -1,10 +1,10 @@
 package com.library.service;
 
+import com.library.dto.PaginatedResponse;
 import com.library.model.Patron;
 import com.library.repository.PatronRepository;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,8 +17,8 @@ public class PatronService {
         this.patronRepository = patronRepository;
     }
 
-    public Page<Patron> getAllPatrons(Pageable pageable) {
-        return patronRepository.findAll(pageable);
+    public PaginatedResponse<Patron> getAllPatrons(Pageable pageable) {
+        return new PaginatedResponse<Patron>(patronRepository.findAll(pageable));
     }
 
     @Cacheable(value = "patrons", key = "#id")

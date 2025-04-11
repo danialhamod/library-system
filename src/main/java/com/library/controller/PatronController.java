@@ -1,8 +1,8 @@
 package com.library.controller;
 
+import com.library.dto.PaginatedResponse;
 import com.library.model.Patron;
 import com.library.service.PatronService;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
@@ -19,7 +19,7 @@ public class PatronController {
     }
 
     @GetMapping
-    public Page<Patron> getBooks(@PageableDefault(size = 10, sort = "id") Pageable pageable) {
+    public PaginatedResponse<Patron> getBooks(@PageableDefault(size = 10, sort = "id") Pageable pageable) {
         return patronService.getAllPatrons(pageable);
     }
 

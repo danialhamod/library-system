@@ -1,12 +1,12 @@
 package com.library.controller;
 
+import com.library.dto.PaginatedResponse;
 import com.library.model.Book;
 import com.library.service.BookService;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 
@@ -20,7 +20,7 @@ public class BookController {
     }
 
     @GetMapping
-    public Page<Book> getBooks(@PageableDefault(size = 10, sort = "id") Pageable pageable) {
+    public PaginatedResponse<Book> getBooks(@PageableDefault(size = 10, sort = "id") Pageable pageable) {
         return bookService.getAllBooks(pageable);
     }
 
