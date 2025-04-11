@@ -32,7 +32,7 @@ public class BorrowingController {
         try {
             return ResponseEntity.ok(borrowingService.returnBook(bookId, patronId));
         } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.ok(null);
         }
     }
 }

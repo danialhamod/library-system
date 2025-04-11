@@ -42,6 +42,6 @@ public class PatronController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePatron(@PathVariable Long id) {
         patronService.deletePatron(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(null);
     }
 }
