@@ -1,6 +1,5 @@
 package com.library;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.library.constants.ErrorCodes;
 import com.library.model.Book;
 import com.library.model.Patron;
@@ -25,9 +24,6 @@ public class BorrowControllerIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;
-
-    @Autowired
-    private ObjectMapper objectMapper;
 
     @Autowired
     private BookRepository bookRepository;

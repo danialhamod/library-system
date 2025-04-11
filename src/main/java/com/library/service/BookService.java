@@ -3,6 +3,8 @@ package com.library.service;
 import com.library.exception.EntityAlreadyExistsException;
 import com.library.model.Book;
 import com.library.repository.BookRepository;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
@@ -10,7 +12,7 @@ import java.util.List;
 @Service
 public class BookService {
     private final BookRepository bookRepository;
-
+    
     public BookService(BookRepository bookRepository) {
         this.bookRepository = bookRepository;
     }
@@ -19,6 +21,7 @@ public class BookService {
         return bookRepository.findAll();
     }
 
+    @Cacheable(value = "books", key = "#id")
     public Book getBookById(Long id) {
         return bookRepository.findById(id).orElse(null);
     }
@@ -32,6 +35,7 @@ public class BookService {
         return bookRepository.save(book);
     }
 
+    @CacheEvict(value = "books", key = "#book.id")
     @Transactional
     public Book updateBook(Long id, Book bookDetails) {
         Book book = bookRepository.findById(id).orElse(null);
