@@ -1,5 +1,6 @@
 package com.library.service;
 
+import com.library.aop.LogExecutionTime;
 import com.library.exception.MessageException;
 import com.library.model.Book;
 import com.library.model.BorrowingRecord;
@@ -25,6 +26,7 @@ public class BorrowingService {
         this.patronRepository = patronRepository;
     }
 
+    @LogExecutionTime
     @Transactional
     public BorrowingRecord borrowBook(Long bookId, Long patronId) {
         Book book = bookRepository.findById(bookId)
@@ -47,6 +49,7 @@ public class BorrowingService {
         return borrowingRecordRepository.save(record);
     }
 
+    @LogExecutionTime
     @Transactional
     public BorrowingRecord returnBook(Long bookId, Long patronId) {
         Book book = bookRepository.findById(bookId)
