@@ -10,6 +10,12 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Patron {
+    public Patron(String name, String email, String contactInfo) {
+        this.name = name;
+        this.email = email;
+        this.contactInfo = contactInfo;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

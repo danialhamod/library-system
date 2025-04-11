@@ -11,6 +11,13 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Book {
+    public Book(String title, String author, String isbn, int year) {
+        this.title = title;
+        this.author = author;
+        this.isbn = isbn;
+        this.publicationYear = year;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
