@@ -1,6 +1,7 @@
 package com.library.service;
 
 import com.library.dto.PaginatedResponse;
+import com.library.exception.EntityAlreadyExistsException;
 import com.library.model.Patron;
 import com.library.repository.PatronRepository;
 import org.springframework.cache.annotation.CacheEvict;
@@ -27,6 +28,10 @@ public class PatronService {
     }
 
     public Patron addPatron(Patron patron) {
+        // Check for existing email first
+        if (patronRepository.existsByEmail(patron.getEmail())) {
+            throw new EntityAlreadyExistsException("patron", "email", patron.getEmail());
+        }
         return patronRepository.save(patron);
     }
 
@@ -35,6 +40,13 @@ public class PatronService {
     public Patron updatePatron(Long id, Patron patronDetails) {
         Patron patron = patronRepository.findById(id).orElse(null);
         if (patron != null) {
+            // Check email uniqueness if changed
+            if (!patron.getEmail().equals(patronDetails.getEmail())) {
+                if (patronRepository.existsByEmail(patronDetails.getEmail())) {
+                    throw new EntityAlreadyExistsException("patron", "email", patron.getEmail());
+                }
+            }
+            // Update fields
             patron.setName(patronDetails.getName());
             patron.setContactInfo(patronDetails.getContactInfo());
             patron.setEmail(patronDetails.getEmail());

@@ -5,6 +5,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 import com.library.constants.BasicAuthCredentials;
+
+import static org.springframework.security.config.Customizer.withDefaults;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,11 +23,11 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .csrf().disable()
-            .authorizeHttpRequests(authz -> authz
-                .anyRequest().authenticated()
-            )
-            .httpBasic(); // Enable HTTP Basic Authentication
+                .csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(authz -> authz
+                                .anyRequest().authenticated()
+                )
+                .httpBasic(withDefaults()); // Enable HTTP Basic Authentication
         return http.build();
     }
 

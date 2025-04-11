@@ -1,5 +1,6 @@
 package com.library;
 
+import com.library.constants.ErrorCodes;
 import com.library.model.Patron;
 import com.library.repository.PatronRepository;
 import org.junit.jupiter.api.Test;
@@ -86,6 +87,21 @@ public class PatronControllerIntegrationTest extends BaseTest {
 
         mockMvc.perform(delete("/api/patrons/" + savedPatron.getId()).with(auth))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    void createPatron_duplicateEmail_shouldReturn409() throws Exception {
+        Patron existingPatron = new Patron("Existing", "duplicate@example.com", "6666666666");
+        patronRepository.save(existingPatron);
+
+        Patron duplicatePatron = new Patron("Duplicate", "duplicate@example.com", "7777777777");
+
+        mockMvc.perform(post("/api/patrons").with(auth)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(duplicatePatron)))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.errorCode").value(ErrorCodes.CONFLICT_ERROR));
     }
 
     @Test

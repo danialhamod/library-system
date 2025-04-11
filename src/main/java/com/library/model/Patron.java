@@ -5,7 +5,8 @@ import jakarta.validation.constraints.*;
 import lombok.*;
 
 @Entity
-@Table(name = "patron")
+@Table(name = "patron", 
+       uniqueConstraints = @UniqueConstraint(columnNames = "email"))
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -29,5 +30,6 @@ public class Patron {
     private String contactInfo;
 
     @Email(message = "Email should be valid")
+    @Column(unique = true)
     private String email;
 }
