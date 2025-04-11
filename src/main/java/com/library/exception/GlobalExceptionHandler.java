@@ -1,5 +1,6 @@
 package com.library.exception;
 
+import com.library.constants.ErrorCodes;
 import com.library.dto.ApiResponse;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
@@ -53,6 +54,14 @@ public class GlobalExceptionHandler {
                 "Invalid parameters", 
                 HttpStatus.BAD_REQUEST.value()
             ).withData(errors));
+    }
+
+    // EntityAlreadyExistsException handler
+    @ExceptionHandler(EntityAlreadyExistsException.class)
+    public ResponseEntity<ApiResponse<Void>> handleISBNExists(EntityAlreadyExistsException ex) {
+        return ResponseEntity
+            .status(HttpStatus.CONFLICT)
+            .body(ApiResponse.error(ex.getMessage(), ErrorCodes.CONFLICT_ERROR));
     }
 
     // Generic exception handler

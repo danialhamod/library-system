@@ -1,5 +1,6 @@
 package com.library.service;
 
+import com.library.exception.EntityAlreadyExistsException;
 import com.library.model.Book;
 import com.library.repository.BookRepository;
 import org.springframework.stereotype.Service;
@@ -22,12 +23,23 @@ public class BookService {
     }
 
     public Book addBook(Book book) {
+        // Check for existing ISBN first
+        if (bookRepository.existsByIsbn(book.getIsbn())) {
+            throw new EntityAlreadyExistsException("book", "ISBN", book.getIsbn());
+        }
         return bookRepository.save(book);
     }
 
     public Book updateBook(Long id, Book bookDetails) {
         Book book = bookRepository.findById(id).orElse(null);
         if (book != null) {
+            // Check ISBN uniqueness if changed
+            if (!book.getIsbn().equals(bookDetails.getIsbn())) {
+                if (bookRepository.existsByIsbn(bookDetails.getIsbn())) {
+                    throw new EntityAlreadyExistsException("book", "ISBN", bookDetails.getIsbn());
+                }
+            }
+            // Update fields
             book.setTitle(bookDetails.getTitle());
             book.setAuthor(bookDetails.getAuthor());
             book.setPublicationYear(bookDetails.getPublicationYear());
