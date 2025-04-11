@@ -3,6 +3,7 @@ package com.library.service;
 import com.library.model.Patron;
 import com.library.repository.PatronRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
@@ -25,6 +26,7 @@ public class PatronService {
         return patronRepository.save(patron);
     }
 
+    @Transactional
     public Patron updatePatron(Long id, Patron patronDetails) {
         Patron patron = patronRepository.findById(id).orElse(null);
         if (patron != null) {

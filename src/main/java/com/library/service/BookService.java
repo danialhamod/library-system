@@ -4,6 +4,7 @@ import com.library.exception.EntityAlreadyExistsException;
 import com.library.model.Book;
 import com.library.repository.BookRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
@@ -22,6 +23,7 @@ public class BookService {
         return bookRepository.findById(id).orElse(null);
     }
 
+    @Transactional
     public Book addBook(Book book) {
         // Check for existing ISBN first
         if (bookRepository.existsByIsbn(book.getIsbn())) {
@@ -30,6 +32,7 @@ public class BookService {
         return bookRepository.save(book);
     }
 
+    @Transactional
     public Book updateBook(Long id, Book bookDetails) {
         Book book = bookRepository.findById(id).orElse(null);
         if (book != null) {
