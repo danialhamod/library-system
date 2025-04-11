@@ -19,13 +19,7 @@ import static org.hamcrest.Matchers.*;
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
-public class PatronControllerIntegrationTest {
-
-    @Autowired
-    private MockMvc mockMvc;
-
-    @Autowired
-    private ObjectMapper objectMapper;
+public class PatronControllerIntegrationTest extends BaseTest {
 
     @Autowired
     private PatronRepository patronRepository;
@@ -35,7 +29,7 @@ public class PatronControllerIntegrationTest {
     void createPatron_shouldReturn201() throws Exception {
         Patron newPatron = new Patron("John Doe", "john@example.com", "1234567890");
 
-        mockMvc.perform(post("/api/patrons")
+        mockMvc.perform(post("/api/patrons").with(auth)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(newPatron)))
                 .andExpect(status().isCreated())
@@ -50,7 +44,7 @@ public class PatronControllerIntegrationTest {
         patronRepository.save(new Patron("Patron 1", "patron1@example.com", "1111111111"));
         patronRepository.save(new Patron("Patron 2", "patron2@example.com", "2222222222"));
 
-        mockMvc.perform(get("/api/patrons"))
+        mockMvc.perform(get("/api/patrons").with(auth))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.data", hasSize(2)))
@@ -64,7 +58,7 @@ public class PatronControllerIntegrationTest {
         Patron savedPatron = patronRepository.save(
             new Patron("Specific Patron", "specific@example.com", "3333333333"));
 
-        mockMvc.perform(get("/api/patrons/" + savedPatron.getId()))
+        mockMvc.perform(get("/api/patrons/" + savedPatron.getId()).with(auth))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.data.name").value("Specific Patron"));
@@ -78,7 +72,7 @@ public class PatronControllerIntegrationTest {
 
         Patron updateData = new Patron("Updated", "updated@example.com", "4444444444");
 
-        mockMvc.perform(put("/api/patrons/" + savedPatron.getId())
+        mockMvc.perform(put("/api/patrons/" + savedPatron.getId()).with(auth)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(updateData)))
                 .andExpect(status().isOk())
@@ -93,13 +87,13 @@ public class PatronControllerIntegrationTest {
         Patron savedPatron = patronRepository.save(
             new Patron("To Delete", "delete@example.com", "5555555555"));
 
-        mockMvc.perform(delete("/api/patrons/" + savedPatron.getId()))
+        mockMvc.perform(delete("/api/patrons/" + savedPatron.getId()).with(auth))
                 .andExpect(status().isOk());
     }
 
     @Test
     void getPatron_notFound_shouldReturn404() throws Exception {
-        mockMvc.perform(get("/api/patrons/999"))
+        mockMvc.perform(get("/api/patrons/999").with(auth))
                 .andExpect(status().isNotFound());
     }
 }

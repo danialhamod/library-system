@@ -11,8 +11,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.RequestPostProcessor;
 import org.springframework.transaction.annotation.Transactional;
-
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.hamcrest.Matchers.*;
@@ -20,23 +20,16 @@ import static org.hamcrest.Matchers.*;
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
-public class BookControllerIntegrationTest {
-
-    @Autowired
-    private MockMvc mockMvc;
-
-    @Autowired
-    private ObjectMapper objectMapper;
-
+public class BookControllerIntegrationTest extends BaseTest {
     @Autowired
     private BookRepository bookRepository;
-
+    
     @Test
     @Rollback
     void createBook_shouldReturn201() throws Exception {
         Book newBook = new Book("Clean Code", "Robert Martin", "978-3-16-148410-1", 2008);
 
-        mockMvc.perform(post("/api/books")
+        mockMvc.perform(post("/api/books").with(auth)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(newBook)))
                 .andExpect(status().isCreated())
@@ -51,7 +44,7 @@ public class BookControllerIntegrationTest {
         bookRepository.save(new Book("Book 1", "Author 1", "978-3-16-148111-1", 2000));
         bookRepository.save(new Book("Book 2", "Author 2", "978-3-16-148222-1", 2010));
 
-        mockMvc.perform(get("/api/books"))
+        mockMvc.perform(get("/api/books").with(auth))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.data", hasSize(2)))
@@ -65,7 +58,7 @@ public class BookControllerIntegrationTest {
         Book savedBook = bookRepository.save(
             new Book("Specific Book", "Author", "978-3-16-148333-1", 2020));
 
-        mockMvc.perform(get("/api/books/" + savedBook.getId()))
+        mockMvc.perform(get("/api/books/" + savedBook.getId()).with(auth))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.data.title").value("Specific Book"));
@@ -79,7 +72,7 @@ public class BookControllerIntegrationTest {
 
         Book updateData = new Book("Updated", "Author", "978-3-16-148444-1", 2023);
 
-        mockMvc.perform(put("/api/books/" + savedBook.getId())
+        mockMvc.perform(put("/api/books/" + savedBook.getId()).with(auth)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(updateData)))
                 .andExpect(status().isOk())
@@ -94,7 +87,7 @@ public class BookControllerIntegrationTest {
         Book savedBook = bookRepository.save(
             new Book("To Delete", "Author", "978-3-16-148555-1", 2010));
 
-        mockMvc.perform(delete("/api/books/" + savedBook.getId()))
+        mockMvc.perform(delete("/api/books/" + savedBook.getId()).with(auth))
                 .andExpect(status().isOk());
     }
 
@@ -105,7 +98,7 @@ public class BookControllerIntegrationTest {
 
         Book duplicateBook = new Book("Duplicate", "Author", "978-3-16-148666-1", 2021);
 
-        mockMvc.perform(post("/api/books")
+        mockMvc.perform(post("/api/books").with(auth)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(duplicateBook)))
                 .andExpect(status().isConflict())
@@ -115,7 +108,7 @@ public class BookControllerIntegrationTest {
 
     @Test
     void getBook_notFound_shouldReturn404() throws Exception {
-        mockMvc.perform(get("/api/books/999"))
+        mockMvc.perform(get("/api/books/999").with(auth))
                 .andExpect(status().isNotFound());
     }
 }

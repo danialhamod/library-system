@@ -35,7 +35,7 @@ public class BookService {
         return bookRepository.save(book);
     }
 
-    @CacheEvict(value = "books", key = "#book.id")
+    @CacheEvict(value = "books", key = "#p0")
     @Transactional
     public Book updateBook(Long id, Book bookDetails) {
         Book book = bookRepository.findById(id).orElse(null);

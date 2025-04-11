@@ -30,7 +30,7 @@ public class PatronService {
         return patronRepository.save(patron);
     }
 
-    @CacheEvict(value = "patrons", key = "#patron.id")
+    @CacheEvict(value = "patrons", key = "#p0")
     @Transactional
     public Patron updatePatron(Long id, Patron patronDetails) {
         Patron patron = patronRepository.findById(id).orElse(null);

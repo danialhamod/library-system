@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
+import com.library.constants.BasicAuthCredentials;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,6 +21,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+            .csrf().disable()
             .authorizeHttpRequests(authz -> authz
                 .anyRequest().authenticated()
             )
@@ -31,8 +33,8 @@ public class SecurityConfig {
     @Bean
     public UserDetailsService userDetailsService(PasswordEncoder passwordEncoder) {
         UserDetails user = User.builder()
-            .username("admin")
-            .password(passwordEncoder.encode("admin123"))
+            .username(BasicAuthCredentials.USERNAME)
+            .password(passwordEncoder.encode(BasicAuthCredentials.PASSWORD))
             .roles("USER")
             .build();
         return new InMemoryUserDetailsManager(user);

@@ -20,10 +20,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
-public class BorrowControllerIntegrationTest {
+public class BorrowControllerIntegrationTest extends BaseTest {
 
-    @Autowired
-    private MockMvc mockMvc;
 
     @Autowired
     private BookRepository bookRepository;
@@ -52,7 +50,7 @@ public class BorrowControllerIntegrationTest {
     @Test
     @Rollback
     void borrowBook_shouldReturn200() throws Exception {
-        mockMvc.perform(post("/api/borrow/" + testBook.getId() + "/patron/" + testPatron.getId()))
+        mockMvc.perform(post("/api/borrow/" + testBook.getId() + "/patron/" + testPatron.getId()).with(auth))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.data.book.id").value(testBook.getId()))
@@ -64,10 +62,10 @@ public class BorrowControllerIntegrationTest {
     @Rollback
     void returnBook_shouldReturn200() throws Exception {
         // First borrow the book
-        mockMvc.perform(post("/api/borrow/" + testBook.getId() + "/patron/" + testPatron.getId()));
+        mockMvc.perform(post("/api/borrow/" + testBook.getId() + "/patron/" + testPatron.getId()).with(auth));
 
         // Then return it
-        mockMvc.perform(put("/api/return/" + testBook.getId() + "/patron/" + testPatron.getId()))
+        mockMvc.perform(put("/api/return/" + testBook.getId() + "/patron/" + testPatron.getId()).with(auth))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.data.returnDate").exists());
@@ -76,10 +74,10 @@ public class BorrowControllerIntegrationTest {
     @Test
     void borrowAlreadyBorrowedBook_shouldReturn400() throws Exception {
         // First successful borrow
-        mockMvc.perform(post("/api/borrow/" + testBook.getId() + "/patron/" + testPatron.getId()));
+        mockMvc.perform(post("/api/borrow/" + testBook.getId() + "/patron/" + testPatron.getId()).with(auth));
 
         // Attempt to borrow again
-        mockMvc.perform(post("/api/borrow/" + testBook.getId() + "/patron/" + testPatron.getId()))
+        mockMvc.perform(post("/api/borrow/" + testBook.getId() + "/patron/" + testPatron.getId()).with(auth))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.success").value(false))
                 .andExpect(jsonPath("$.message").value("Book is already borrowed"))
@@ -88,7 +86,7 @@ public class BorrowControllerIntegrationTest {
 
     @Test
     void returnNotBorrowedBook_shouldReturn400() throws Exception {
-        mockMvc.perform(put("/api/return/" + testBook.getId() + "/patron/" + testPatron.getId()))
+        mockMvc.perform(put("/api/return/" + testBook.getId() + "/patron/" + testPatron.getId()).with(auth))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.success").value(false))
                 .andExpect(jsonPath("$.message").value("No active borrowing record found"))
@@ -97,7 +95,7 @@ public class BorrowControllerIntegrationTest {
 
     @Test
     void borrowNonExistingBook_shouldReturn404() throws Exception {
-        mockMvc.perform(post("/api/borrow/999/patron/" + testPatron.getId()))
+        mockMvc.perform(post("/api/borrow/999/patron/" + testPatron.getId()).with(auth))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.success").value(false))
                 .andExpect(jsonPath("$.message").value("Book not found"))
@@ -106,7 +104,7 @@ public class BorrowControllerIntegrationTest {
 
     @Test
     void borrowWithNonExistingPatron_shouldReturn404() throws Exception {
-        mockMvc.perform(post("/api/borrow/" + testBook.getId() + "/patron/999"))
+        mockMvc.perform(post("/api/borrow/" + testBook.getId() + "/patron/999").with(auth))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.success").value(false))
                 .andExpect(jsonPath("$.message").value("Patron not found"))
